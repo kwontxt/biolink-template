@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- ✏️ 1. 탭 제목 바꾸기 -->
+  <title>여기에 이름 입력</title>
+  <link rel="icon" href="./profile.png">
+  <link rel="preload" href="./posts.json" as="fetch" crossorigin="anonymous">
+  <link rel="preload" href="./profile.png" as="image">
+  <!-- ✏️ 2. 블로그 주소 — 네이버아이디 부분을 본인 아이디로 바꾸세요 -->
+  <link rel="dns-prefetch" href="https://blog.naver.com">
+  <link rel="preconnect" href="https://blog.naver.com">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #fff;
+      color: #111;
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 48px 20px 40px;
+    }
+
+    .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; }
+
+    .profile { text-align: center; margin-bottom: 40px; }
+    .profile a { display: inline-block; border-radius: 50%; transition: opacity 0.15s; }
+    .profile a:hover { opacity: 0.75; }
+    .profile img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; display: block; margin-bottom: 12px; }
+    .profile h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .profile p { margin-top: 8px; font-size: 14px; color: #999; }
+
+    .section-title { font-size: 12px; color: #aaa; letter-spacing: 1px; margin-bottom: 12px; }
+
+    .post-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+
+    .post-item {
+      display: block;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      padding: 16px 20px;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
+    }
+    .post-item:hover { background: #f7f7f7; }
+    .post-item .post-title { font-size: 15px; font-weight: 600; line-height: 1.5; color: #111; }
+    .post-item .post-date { font-size: 12px; color: #bbb; margin-top: 4px; }
+    .post-item .post-header { display: flex; align-items: center; gap: 8px; }
+
+    .new-badge {
+      font-size: 10px; font-weight: 700; color: #111;
+      background: #fff; border: 1px solid #111;
+      padding: 2px 6px; border-radius: 4px;
+      white-space: nowrap; order: -1;
+      animation: hotpulse 1.8s ease-in-out infinite;
+    }
+    @keyframes hotpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(0,0,0,0.25); } 50% { box-shadow: 0 0 0 4px rgba(0,0,0,0); } }
+
+    .skeleton-item {
+      border: 1px solid #f0f0f0;
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+    .skeleton-line {
+      border-radius: 4px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e4e4e4 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+    }
+    .skeleton-line.title { height: 15px; width: 75%; margin-bottom: 8px; }
+    .skeleton-line.date  { height: 11px; width: 35%; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    .more-note { font-size: 13px; font-weight: 600; color: #111; text-align: center; margin-bottom: 24px; }
+
+    .blog-link {
+      display: block; text-align: center;
+      border: 1px solid #e8e8e8; border-radius: 10px;
+      padding: 15px; text-decoration: none;
+      color: #555; font-size: 14px;
+      transition: background 0.15s; margin-top: 8px;
+    }
+    .blog-link:hover { background: #f7f7f7; color: #111; }
+
+    .error { text-align: center; color: #bbb; font-size: 14px; padding: 20px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="profile">
+      <!-- ✏️ 3. 네이버아이디를 본인 아이디로 바꾸세요 (총 2곳) -->
+      <a href="https://blog.naver.com/네이버아이디" target="_blank" rel="noopener" aria-label="네이버 블로그 바로가기">
+        <img src="./profile.png" alt="프로필 사진" width="64" height="64" fetchpriority="high" />
+      </a>
+      <!-- ✏️ 1. 이름 입력 -->
+      <h1>여기에 이름 입력</h1>
+      <!-- ✏️ 2. 한 줄 소개 입력 -->
+      <p>여기에 한 줄 소개 입력</p>
+    </div>
+
+    <div class="section-title">최근 글</div>
+    <div class="post-list" id="post-list">
+      <div class="skeleton-item"><div class="skeleton-line title"></div><div class="skeleton-line date"></div></div>
+      <div class="skeleton-item"><div class="skeleton-line title" style="width:60%"></div><div class="skeleton-line date"></div></div>
+      <div class="skeleton-item"><div class="skeleton-line title" style="width:80%"></div><div class="skeleton-line date"></div></div>
+    </div>
+    <div class="more-note" id="more-note"></div>
+
+    <hr style="border:none;border-top:1px solid #f0f0f0;margin:16px 0;">
+    <!-- ✏️ 3. 네이버아이디를 본인 아이디로 바꾸세요 (총 2곳) -->
+    <a class="blog-link" href="https://blog.naver.com/네이버아이디" target="_blank" rel="noopener">
+      블로그 전체 글 보기 →
+    </a>
+  </div>
+
+  <script>
+    (async function () {
+      const list = document.getElementById('post-list');
+      const note = document.getElementById('more-note');
+      try {
+        const res = await fetch('./posts.json', { priority: 'high', cache: 'default' });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        if (!data.items?.length) { list.innerHTML = '<div class="error">글을 불러올 수 없어요.</div>'; return; }
+        list.innerHTML = data.items.map((item, i) => `
+          <a class="post-item" href="${item.link}" target="_blank" rel="noopener">
+            <div class="post-header">
+              ${i === 0 ? '<span class="new-badge">NEW</span>' : ''}
+              <div class="post-title">${item.title}</div>
+            </div>
+            <div class="post-date">${item.pubDate}</div>
+          </a>`).join('');
+        /* ✏️ 하단 문구 원하면 수정:
+           note.textContent = '163일 연속 글쓰기 중'; */
+      } catch {
+        list.innerHTML = '<div class="error">잠시 후 다시 시도해주세요.</div>';
+      }
+    })();
+  </script>
+</body>
+</html>
